@@ -1,6 +1,6 @@
 <?php
 
-namespace phpmysqlmigration;
+namespace Phpmysqlmigration;
 
 include_once __DIR__ . '/../vendor/autoload.php';
 
@@ -9,7 +9,7 @@ include_once __DIR__ . '/../vendor/autoload.php';
  *
  * @author Jens Just Iversen
  */
-class phpmysqlmigrate {
+class Phpmysqlmigration {
     
     public $dbTableName = 'migration_log';
     
