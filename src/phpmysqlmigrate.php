@@ -1,6 +1,6 @@
 <?php
 
-namespace phpmysqlmigrate;
+namespace phpmysqlmigration;
 
 include_once __DIR__ . '/../vendor/autoload.php';
 
