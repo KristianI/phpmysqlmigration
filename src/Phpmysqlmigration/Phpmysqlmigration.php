@@ -23,22 +23,28 @@ class Phpmysqlmigration {
      * Start running new .sql-files from $directory
      * 
      * @param string $directory Directory in which the .sql-files are located
-     * @param type $mysqlConnectionData array('host' => '', 'port' => '', 'username' => '', 'password' => '', 'database' => '')
+     * @param array $mysqlConnectionData array('host' => '', 'port' => '', 'username' => '', 'password' => '', 'database' => '')
+     * @param boolean $reset Default false. No migration, but write to log (mark everything up-to-date).
      * @return string
      */
-    public static function start($directory, $mysqlConnectionData) {
+    public static function start($directory, $mysqlConnectionData, $reset = false) {
         
         $self = new self();
-        $fpdo = $self->initMysqlConnection($mysqlConnectionData);
+        $self->initMysqlConnection($mysqlConnectionData);
         $self->directory = $directory . (!in_array(substr($directory, -1, 1), array('/','\'')) ? '/' : '' );
-        $self->fpdo = $fpdo;
         
         $self->checkMigrationTableExistence();
         
         $newFiles = $self->getNewFiles();
-        $self->migrateFiles($newFiles);
+        $self->migrateFiles($newFiles, $reset);
         
         return count($newFiles) . ' new files migrated.';
+        
+    }
+    
+    public static function reset($directory, $mysqlConnectionData) {
+        
+        return self::start($directory, $mysqlConnectionData, true);
         
     }
     
@@ -57,8 +63,10 @@ class Phpmysqlmigration {
         }
         
         $pdo = new \PDO("mysql:host=" . $mysqlConnectionData['host'] . ";port=" . $port . ";dbname=" . $mysqlConnectionData['database'], $mysqlConnectionData['username'], $mysqlConnectionData['password']);
+        $fpdo = new \FluentPDO($pdo);
         $this->pdo = $pdo;
-        return new \FluentPDO($pdo);
+        $this->fpdo = $pdo;
+        return $fpdo;
         
     }
     
@@ -93,6 +101,8 @@ class Phpmysqlmigration {
                 $newFiles[] = $file;
             }
         }
+        sort($newFiles);
+        
         return $newFiles;
     }
     
@@ -115,6 +125,7 @@ class Phpmysqlmigration {
 
             closedir($handle);
         }
+        sort($files);
         
         return $files;
     }
@@ -123,17 +134,17 @@ class Phpmysqlmigration {
      * Migrate files
      * 
      * @param array $files
+     * @param boolean $onlyLog Default false
      * @return boolean
      */
-    public function migrateFiles($files) {
+    public function migrateFiles($files, $onlyLog = false) {
         foreach ((array) $files as $file) {
-            $sql = file_get_contents($this->directory . $file);
-            if ($res = $this->pdo->exec($sql)) {
-                
+            if (!$onlyLog) { 
+                $sql = file_get_contents($this->directory . $file);
+                if ($res = $this->pdo->exec($sql)) {
+                }
+                echo print_r($this->pdo->errorInfo(), true);
             }
-            
-            echo print_r($this->pdo->errorInfo(), true);
-            
             $this->addToMigrationLog($file);
         }
     }
