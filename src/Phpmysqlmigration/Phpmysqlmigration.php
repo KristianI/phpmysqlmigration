@@ -181,7 +181,9 @@ class Phpmysqlmigration {
                 foreach ((array)$sqls as $sql) {
                     if (!$res = $this->pdo->exec($sql)) {
                         $error = $this->pdo->errorInfo();
-                        echo 'Error with ' . $file . ': ' . $error[2] . "\n\r";
+                        if (!($error[0] === '00000' || $error[0] === '01000')) {
+                            echo 'Error with ' . $file . ': ' . $error[2] . "\n\r";
+                        }
                     }
                 }
             }
