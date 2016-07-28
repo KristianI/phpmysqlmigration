@@ -65,7 +65,7 @@ class Phpmysqlmigration {
         $pdo = new \PDO("mysql:host=" . $mysqlConnectionData['host'] . ";port=" . $port . ";dbname=" . $mysqlConnectionData['database'], $mysqlConnectionData['username'], $mysqlConnectionData['password']);
         $fpdo = new \FluentPDO($pdo);
         $this->pdo = $pdo;
-        $this->fpdo = $pdo;
+        $this->fpdo = $fpdo;
         return $fpdo;
         
     }
