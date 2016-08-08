@@ -98,7 +98,7 @@ class Phpmysqlmigration {
             $port = '3306';
         }
         
-        $pdo = new \PDO("mysql:host=" . $mysqlConnectionData['host'] . ";port=" . $port . ";dbname=" . $mysqlConnectionData['database'], $mysqlConnectionData['username'], $mysqlConnectionData['password']);
+        $pdo = new \PDO("mysql:host=" . $mysqlConnectionData['host'] . ";port=" . $port . ";charset=UTF8;dbname=" . $mysqlConnectionData['database'], $mysqlConnectionData['username'], $mysqlConnectionData['password']);
         $fpdo = new \FluentPDO($pdo);
         $this->pdo = $pdo;
         $this->fpdo = $fpdo;
